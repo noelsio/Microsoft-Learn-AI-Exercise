@@ -1,9 +1,10 @@
 """
 High School Management System API
-
 A super simple FastAPI application that allows students to view and sign up
 for extracurricular activities at Mergington High School.
 """
+# ...existing code...
+
 
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -27,31 +28,31 @@ activities = {
         "max_participants": 15,
         "participants": ["alex@mergington.edu"]
         },
-        "Tennis Club": {
+    "Tennis Club": {
         "description": "Tennis lessons and friendly matches",
         "schedule": "Tuesdays and Thursdays, 4:00 PM - 5:00 PM",
         "max_participants": 8,
         "participants": ["isabella@mergington.edu"]
         },
-        "Drama Club": {
+    "Drama Club": {
         "description": "Acting, script reading, and theatrical performances",
         "schedule": "Wednesdays, 3:30 PM - 5:00 PM",
         "max_participants": 20,
         "participants": ["liam@mergington.edu", "mia@mergington.edu"]
         },
-        "Art Studio": {
+    "Art Studio": {
         "description": "Painting, drawing, sculpture, and creative expression",
         "schedule": "Fridays, 3:30 PM - 5:00 PM",
         "max_participants": 15,
         "participants": ["lucas@mergington.edu"]
         },
-        "Robotics Club": {
+    "Robotics Club": {
         "description": "Build and program robots for competition",
         "schedule": "Tuesdays and Thursdays, 4:30 PM - 6:00 PM",
         "max_participants": 12,
         "participants": ["noah@mergington.edu", "ava@mergington.edu"]
         },
-        "Debate Team": {
+    "Debate Team": {
         "description": "Develop argumentation and public speaking skills",
         "schedule": "Mondays and Thursdays, 3:30 PM - 4:45 PM",
         "max_participants": 10,
@@ -103,4 +104,17 @@ def signup_for_activity(activity_name: str, email: str):
 
     # Add student
     activity["participants"].append(email)
+    return {"message": f"Signed up {email} for {activity_name}"}
+
+
+
+@app.delete("/activities/{activity_name}/unregister")
+def unregister_participant(activity_name: str, email: str):
+    """Remove a participant from an activity"""
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+    if email not in activities[activity_name]["participants"]:
+        raise HTTPException(status_code=400, detail="Student not registered for this activity")
+    activities[activity_name]["participants"].remove(email)
+    return {"message": f"Participant {email} removed from {activity_name}"}
     return {"message": f"Signed up {email} for {activity_name}"}
